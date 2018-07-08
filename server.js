@@ -3,13 +3,13 @@ var express = require('express'),
   bodyParser = require('body-parser'),
   mongoose = require('mongoose'),
   cors = require('cors'),
+  jwt = require('jsonwebtoken'),
   app = express();
 
 app.use(cors({
     origin: "http://localhost:4200"
   }
 ));
-
 
 //App -pre
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -21,6 +21,17 @@ var db = mongoose.connection;
 
 
 //Collection Schemas
+
+var userSchema = new mongoose.Schema({
+  username: String,
+  password: String,
+  firstname: String,
+  lastname: String,
+  phone: Number
+})
+
+var User = mongoose.model("User", userSchema);
+
 var productSchema = new mongoose.Schema({
   productId: Number,
   productName: String,
@@ -35,10 +46,40 @@ var productSchema = new mongoose.Schema({
 
 var Product = mongoose.model("Product", productSchema);
 
+
+//Authentication Requests
+app.post('/login', function(req, res) {
+
+  let token = jwt.sign({username: req.body.username}, 'thisisasecretkey', {
+    expiresIn: '1h'
+  });
+
+  if(req.body.username) {
+    User.find(req.body, function (err, data) {
+      if(data.length) {
+        console.log(data)
+        res.send({
+          isLoggedIn: true,
+          token: token
+        }) } else {
+        console.log(data)
+        res.send({
+          isLoggedIn: false,
+          token: false
+        })
+      }
+    })
+  } else {
+    res.send({
+      isLoggedIn: false,
+      token: false
+    })
+  }
+})
+
 app.get('/getData', function(req, res) {
   Product.find(function(err, data) {
     if(!err) {
-      console.log('It is sending the data')
       res.send(data);
     } else {
       console.log(err);
