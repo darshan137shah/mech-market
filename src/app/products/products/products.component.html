@@ -1,0 +1,28 @@
+<div class="container-fluid">
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h1>Products</h1>
+    </div>
+    <div class="panel-body">
+      <input type="text" class="form-control" placeholder="Search" [(ngModel)]="filterBy">
+      <table class="table table-responsive table-hover">
+        <tr>
+          <th><button class="btn btn-default" (click)="imgToggle()">{{(imgHide) ? "Show Image" : "Hide Image"}}</button></th>
+          <th>Product Name</th>
+          <th>Product Description</th>
+          <th>Product Price</th>
+          <th>Product Rating</th>
+        </tr>
+        <tr *ngFor="let product of products | products: filterBy">
+          <td *ngIf="!imgHide">
+            <img [src]="product.imageUrl" [alt]="product.productName" class="img-responsive" style="height: 50px">
+          </td>
+          <td>{{product.productName}}</td>
+          <td>{{product.description}}</td>
+          <td>{{product.price}}</td>
+          <td>{{product.starRating}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
