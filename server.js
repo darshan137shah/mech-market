@@ -28,8 +28,7 @@ var userSchema = new mongoose.Schema({
   firstname: String,
   lastname: String,
   phone: Number
-})
-
+});
 var User = mongoose.model("User", userSchema);
 
 var productSchema = new mongoose.Schema({
@@ -43,9 +42,7 @@ var productSchema = new mongoose.Schema({
   imageUrl: String
 
 })
-
 var Product = mongoose.model("Product", productSchema);
-
 
 //Authentication Requests
 app.post('/login', function(req, res) {
@@ -57,12 +54,10 @@ app.post('/login', function(req, res) {
   if(req.body.username) {
     User.find(req.body, function (err, data) {
       if(data.length) {
-        console.log(data)
         res.send({
           isLoggedIn: true,
           token: token
         }) } else {
-        console.log(data)
         res.send({
           isLoggedIn: false,
           token: false
@@ -77,12 +72,27 @@ app.post('/login', function(req, res) {
   }
 })
 
+app.use(function(req, res, next) {
+  var token = req.body.token || req.headers['token'];
+  jwt.verify(token, 'thisisasecretkey', function(err, decoded) {
+    if(!err && decoded) {
+      req.decoded = decoded;
+      next();
+    } else {
+      res.send({
+        flag: "Error",
+        err: "Token is not verfied"
+      })
+    }
+  })
+})
+
 app.get('/getData', function(req, res) {
   Product.find(function(err, data) {
     if(!err) {
       res.send(data);
     } else {
-      console.log(err);
+      res.send(err);
     }
   })
 })

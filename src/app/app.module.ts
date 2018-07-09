@@ -1,8 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from "@angular/forms";
-import { RouterModule, Router } from "@angular/router";
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { RouterModule} from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { ProductsComponent } from './products/products/products.component';
@@ -14,8 +14,9 @@ import { ProductsService } from './products/products.service';
 import { ProductsPipe } from './products/products.pipe';
 import { LoginComponent } from './auth/login/login.component';
 import { NavComponent } from './auth/nav/nav.component';
-import { CookieService } from "ngx-cookie-service";
-import { AuthGuard } from "./auth/auth.guard";
+import { CookieService } from 'ngx-cookie-service';
+import { AuthGuard } from './auth/auth.guard';
+import { InterceptorService } from './auth/interceptor.service';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,11 @@ import { AuthGuard } from "./auth/auth.guard";
       {path: '', redirectTo: 'home', pathMatch: 'full'}
       ])
   ],
-  providers: [ProductsService, CookieService, AuthGuard ],
+  providers: [ProductsService, CookieService, AuthGuard, {
+    provide: HTTP_INTERCEPTORS,
+    useClass: InterceptorService,
+    multi: true
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
