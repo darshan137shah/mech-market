@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule} from '@angular/router';
 
 import { AppComponent } from './app.component';
@@ -32,9 +32,12 @@ import { InterceptorService } from './auth/interceptor.service';
     BrowserModule,
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule,
     RouterModule.forRoot([
       {path: 'login', component: LoginComponent},
-      {path: 'products', component: ProductsComponent, canActivate: [AuthGuard]},
+      {path: 'products', component: ProductsComponent, canActivate: [AuthGuard], children: [
+          {path: 'addNew', component: AddProductsComponent, canActivate: [AuthGuard]}
+        ]},
       {path: 'home', component: HomeComponent},
       {path: '', redirectTo: 'home', pathMatch: 'full'}
       ])
